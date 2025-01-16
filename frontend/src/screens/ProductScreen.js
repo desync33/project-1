@@ -1,14 +1,16 @@
 import axios from 'axios';
 import React, { useContext, useEffect, useReducer } from 'react';
 import Badge from 'react-bootstrap/Badge';
+import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Col from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/esm/Button';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Row from 'react-bootstrap/Row';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Rating from '../components/Rating';
 import { Store } from '../Store';
+
+// Reducer function
 const reducer = (state, action) => {
   switch (action.type) {
     case 'FETCH_REQUEST':
@@ -23,8 +25,10 @@ const reducer = (state, action) => {
 };
 
 function ProductScreen() {
+  const navigate = useNavigate();
   const params = useParams();
   const { slug } = params;
+
   const [{ loading, error, product }, dispatch] = useReducer(reducer, {
     product: [],
     loading: true,
@@ -36,7 +40,6 @@ function ProductScreen() {
       dispatch({ type: 'FETCH_REQUEST' });
       try {
         const result = await axios.get(`/api/products/slug/${slug}`);
-        console.log(slug);
         dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
       } catch (error) {
         dispatch({ type: 'FETCH_FAIL', payload: error.message });
@@ -44,12 +47,23 @@ function ProductScreen() {
     };
     fetchData();
   }, [slug]);
-  const { dispatch: ctxDispatch } = useContext(Store);
-  const addToCartHandler = () => {
+
+  const { state, dispatch: ctxDispatch } = useContext(Store);
+  const { cart } = state;
+
+  const addToCartHandler = async () => {
+    const existItem = cart.cartItems.find((x) => x.id === product.id);
+    const quantity = existItem ? existItem.quantity + 1 : 1;
+    const { data } = await axios.get(`/api/products/${product.id}`);
+    if (data.countInStock < quantity) {
+      window.alert('Sorry, product is out of stock');
+      return;
+    }
     ctxDispatch({
       type: 'CART_ADD_ITEM',
-      payload: { ...product, quantity: 1 },
+      payload: { ...product, quantity },
     });
+    navigate('/cart');
   };
 
   return loading ? (
@@ -69,22 +83,21 @@ function ProductScreen() {
         <Col md={3}>
           <ListGroup variant="flush">
             <ListGroup.Item>
-              <title>{product.name}</title>
-
               <h1>{product.name}</h1>
             </ListGroup.Item>
-            <ListGroup.Item>
-              <Rating
-                rating={product.rating}
-                numReviews={product.numReviews}
-              ></Rating>
-            </ListGroup.Item>
-            <ListGroup.Item>Pirce : ${product.price}</ListGroup.Item>
+
+            <ListGroup.Item>Price: ${product.price}</ListGroup.Item>
+            <ListGroup.Item></ListGroup.Item>
             <ListGroup.Item>
               Description:
               <p>{product.description}</p>
             </ListGroup.Item>
           </ListGroup>
+          <ListGroup.Item>Price: ${product.price}</ListGroup.Item>
+          <Rating
+            rating={product.rating}
+            numReviews={product.numReviews}
+          ></Rating>
         </Col>
         <Col md={3}>
           <Card>
@@ -126,4 +139,5 @@ function ProductScreen() {
     </div>
   );
 }
+
 export default ProductScreen;

@@ -6,7 +6,7 @@ dotenv.config();
 export const connectDB = async () => {
   try {
     const connection = await mysql.createConnection(process.env.MYSQL_URI);
-    console.log('Connected to the MySQL database');
+    //console.log('Connected to the MySQL database');
     return connection;
   } catch (error) {
     console.error('Database connection failed:', error.message);
@@ -17,7 +17,7 @@ export const connectDB = async () => {
 export const createProductTable = async (connection) => {
   const query = `
     CREATE TABLE IF NOT EXISTS Product (
-      id INT AUTO_INCREMENT PRIMARY KEY,
+      id INT PRIMARY KEY,
       name VARCHAR(255) NOT NULL UNIQUE,
       slug VARCHAR(255) NOT NULL UNIQUE,
       image VARCHAR(255) NOT NULL,

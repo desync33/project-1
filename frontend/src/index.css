@@ -36,3 +36,59 @@ main {
 .img-large {
   max-width: 100%;
 }
+.navbar-brand {
+  font-weight: bold;
+}
+.side-navbar {
+  width: 240px;
+  height: 100%;
+  position: absolute;
+  left: -300px;
+  background-color: #100901;
+  transition: 0.5s;
+}
+.site-container {
+  transition: 0.4s;
+}
+.active-cont {
+  margin-left: 240px;
+}
+.active-nav {
+  left: 0;
+}
+.small-container {
+  max-width: 600px;
+}
+.img-thumbnail {
+  height: 80px;
+}
+.user-management-screen {
+  padding: 20px;
+}
+
+.add-user-form {
+  margin-bottom: 30px;
+}
+
+.add-user-form input,
+.add-user-form button {
+  display: block;
+  margin: 10px 0;
+  padding: 8px;
+}
+
+.user-list table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.user-list th,
+.user-list td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.user-list th {
+  background-color: #f4f4f4;
+}

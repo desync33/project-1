@@ -8,6 +8,7 @@ seedRouter.get('/', async (req, res) => {
   const connection = await connectDB();
 
   try {
+    // Clear the Product table
     await connection.execute('DELETE FROM Product');
 
     const insertProductQuery = `
@@ -30,10 +31,27 @@ seedRouter.get('/', async (req, res) => {
       ]);
     }
 
-    res.send({ message: 'Products seeded successfully' });
+    // Clear the User table
+    await connection.execute('DELETE FROM User');
+
+    const insertUserQuery = `
+      INSERT INTO User (name, email, password, isAdmin)
+      VALUES (?, ?, ?, ?)
+    `;
+
+    for (const user of data.users) {
+      await connection.execute(insertUserQuery, [
+        user.name,
+        user.email,
+        user.password,
+        user.isAdmin,
+      ]);
+    }
+
+    res.send({ message: 'Products and Users seeded successfully' });
   } catch (error) {
-    console.error('Error seeding products:', error.message);
-    res.status(500).send({ message: 'Error seeding products' });
+    console.error('Error seeding data:', error.message);
+    res.status(500).send({ message: 'Error seeding data' });
   } finally {
     await connection.end();
   }
